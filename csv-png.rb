@@ -6,7 +6,9 @@ require 'bundler'
 require 'csv'
 require 'optparse'
 
-require './util'
+require_relative './util'
+
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('Gemfile', __dir__)
 
 Bundler.require(:default)
 
