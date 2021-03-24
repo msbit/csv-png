@@ -16,21 +16,13 @@ options = {
 
 option_parser = OptionParser.new do |parser|
   parser.banner = 'Usage: csv2png.rb [options]'
-  parser.on('-i INPUT', '--input=INPUT', 'Input CSV file') do |v|
-    options[:input] = v
-  end
-  parser.on('-o OUTPUT', '--output=OUTPUT', 'Output PNG file') do |v|
-    options[:output] = v
-  end
-  parser.on('-w WIDTH', '--width=WIDTH', Integer, 'Output PNG width') do |v|
-    options[:width] = v
-  end
-  parser.on('-h HEIGHT', '--height=HEIGHT', Integer, 'Output PNG height') do |v|
-    options[:height] = v
-  end
+  parser.on('-i INPUT', '--input=INPUT', 'Input CSV file')
+  parser.on('-o OUTPUT', '--output=OUTPUT', 'Output PNG file')
+  parser.on('-w WIDTH', '--width=WIDTH', Integer, 'Output PNG width')
+  parser.on('-h HEIGHT', '--height=HEIGHT', Integer, 'Output PNG height')
 end
 
-option_parser.parse!
+option_parser.parse!(into: options)
 
 if options[:input].nil? || options[:output].nil?
   puts option_parser.help
