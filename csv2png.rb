@@ -2,16 +2,41 @@
 
 require 'bundler'
 require 'csv'
+require 'optparse'
 
 require './util'
 
 Bundler.require(:default)
 
-return if ARGV.count < 2
+options = {
+  width: 1920,
+  height: 1080
+}
+
+option_parser = OptionParser.new do |parser|
+  parser.banner = 'Usage: csv2png.rb [options]'
+  parser.on('-i INPUT', '--input=INPUT', 'Input CSV file') do |v|
+    options[:input] = v
+  end
+  parser.on('-o OUTPUT', '--output=OUTPUT', 'Output PNG file') do |v|
+    options[:output] = v
+  end
+  parser.on('-w WIDTH', '--width=WIDTH', Integer, 'Output PNG width') do |v|
+    options[:width] = v
+  end
+  parser.on('-h HEIGHT', '--height=HEIGHT', Integer, 'Output PNG height') do |v|
+    options[:height] = v
+  end
+end
+
+option_parser.parse!
+
+if options[:input].nil? || options[:output].nil?
+  puts option_parser.help
+  return
+end
 
 MARGIN = 50
-WIDTH = 1920
-HEIGHT = 1080
 
 def read_input(filename)
   input = CSV.foreach(filename)
@@ -32,12 +57,16 @@ def read_input(filename)
   [labels, data]
 end
 
-def draw_axes(output, _labels, _data)
-  output.line_xiaolin_wu(MARGIN, MARGIN, MARGIN, HEIGHT - MARGIN, ChunkyPNG::Color::BLACK)
-  output.line_xiaolin_wu(MARGIN, HEIGHT - MARGIN, WIDTH - MARGIN, HEIGHT - MARGIN, ChunkyPNG::Color::BLACK)
+def draw_axes(output, _labels, _data, options)
+  output.line_xiaolin_wu(MARGIN, MARGIN,
+                         MARGIN, options[:height] - MARGIN,
+                         ChunkyPNG::Color::BLACK)
+  output.line_xiaolin_wu(MARGIN, options[:height] - MARGIN,
+                         options[:width] - MARGIN, options[:height] - MARGIN,
+                         ChunkyPNG::Color::BLACK)
 end
 
-def calculate_attributes(data)
+def calculate_attributes(data, options)
   xmin = 0.0
   xmax = 0.0
   value_min = 0.0
@@ -58,11 +87,15 @@ def calculate_attributes(data)
 
   colours = (0...series_count).map { |i| ChunkyPNG::Color.from_hsv((i * 360) / series_count, 1, 1) }
 
-  [colours, scaler(xmin, xmax, MARGIN, WIDTH - MARGIN), scaler(value_min, value_max, HEIGHT - MARGIN, MARGIN)]
+  [
+    colours,
+    scaler(xmin, xmax, MARGIN, options[:width] - MARGIN),
+    scaler(value_min, value_max, options[:height] - MARGIN, MARGIN)
+  ]
 end
 
-def draw_data(output, data)
-  colours, horizontal_scaler, vertical_scaler = calculate_attributes(data)
+def draw_data(output, data, options)
+  colours, horizontal_scaler, vertical_scaler = calculate_attributes(data, options)
   data.each_cons(2) do |(x0, series0), (x1, series1)|
     (0...series0.count).each do |i|
       output.line_xiaolin_wu(horizontal_scaler.call(x0).to_i, vertical_scaler.call(series0[i]).to_i,
@@ -72,11 +105,11 @@ def draw_data(output, data)
   end
 end
 
-labels, data = read_input(ARGV[0])
+labels, data = read_input(options[:input])
 
-png = ChunkyPNG::Image.new(WIDTH, HEIGHT, ChunkyPNG::Color::WHITE)
+output = ChunkyPNG::Image.new(options[:width], options[:height], ChunkyPNG::Color::WHITE)
 
-draw_axes(png, labels, data)
-draw_data(png, data)
+draw_axes(output, labels, data, options)
+draw_data(output, data, options)
 
-png.save(ARGV[1], interlace: true)
+output.save(options[:output], interlace: true)
