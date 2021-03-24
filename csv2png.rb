@@ -1,13 +1,13 @@
+# frozen_string_literal: true
+
 require 'bundler'
 require 'csv'
 
-require './util.rb'
+require './util'
 
 Bundler.require(:default)
 
-if ARGV.count < 2
-  return
-end
+return if ARGV.count < 2
 
 MARGIN = 50
 WIDTH = 1920
@@ -32,7 +32,7 @@ def read_input(filename)
   [labels, data]
 end
 
-def draw_axes(output, labels, data)
+def draw_axes(output, _labels, _data)
   output.line_xiaolin_wu(MARGIN, MARGIN, MARGIN, HEIGHT - MARGIN, ChunkyPNG::Color::BLACK)
   output.line_xiaolin_wu(MARGIN, HEIGHT - MARGIN, WIDTH - MARGIN, HEIGHT - MARGIN, ChunkyPNG::Color::BLACK)
 end
@@ -44,13 +44,13 @@ def calculate_attributes(data)
   ymax = 0.0
   series_count = 0
 
-  for x, ys in data
+  data.each do |x, ys|
     xmin = x < xmin ? x : xmin
     xmax = x > xmax ? x : xmax
 
     series_count = ys.count > series_count ? ys.count : series_count
 
-    for y in ys
+    ys.each do |y|
       ymin = y < ymin ? y : ymin
       ymax = y > ymax ? y : ymax
     end
@@ -64,9 +64,9 @@ end
 def draw_data(output, data)
   colours, x_scaler, y_scaler = calculate_attributes(data)
   data.each_cons(2) do |(x0, ys0), (x1, ys1)|
-    for i in 0...ys0.count
-      output.line_xiaolin_wu(x_scaler.(x0).to_i, y_scaler.(ys0[i]).to_i,
-                             x_scaler.(x1).to_i, y_scaler.(ys1[i]).to_i,
+    (0...ys0.count).each do |i|
+      output.line_xiaolin_wu(x_scaler.call(x0).to_i, y_scaler.call(ys0[i]).to_i,
+                             x_scaler.call(x1).to_i, y_scaler.call(ys1[i]).to_i,
                              colours[i])
     end
   end
