@@ -25,8 +25,8 @@ def read_input(filename)
     end
 
     x = row.shift.to_f
-    ys = row.map(&:to_f)
-    data[x] = ys
+    values = row.map(&:to_f)
+    data[x] = values
   end
 
   [labels, data]
@@ -40,33 +40,33 @@ end
 def calculate_attributes(data)
   xmin = 0.0
   xmax = 0.0
-  ymin = 0.0
-  ymax = 0.0
+  value_min = 0.0
+  value_max = 0.0
   series_count = 0
 
-  data.each do |x, ys|
+  data.each do |x, series|
     xmin = x < xmin ? x : xmin
     xmax = x > xmax ? x : xmax
 
-    series_count = ys.count > series_count ? ys.count : series_count
+    series_count = series.count > series_count ? series.count : series_count
 
-    ys.each do |y|
-      ymin = y < ymin ? y : ymin
-      ymax = y > ymax ? y : ymax
+    series.each do |value|
+      value_min = value < value_min ? value : value_min
+      value_max = value > value_max ? value : value_max
     end
   end
 
   colours = (0...series_count).map { |i| ChunkyPNG::Color.from_hsv((i * 360) / series_count, 1, 1) }
 
-  [colours, scaler(xmin, xmax, MARGIN, WIDTH - MARGIN), scaler(ymin, ymax, HEIGHT - MARGIN, MARGIN)]
+  [colours, scaler(xmin, xmax, MARGIN, WIDTH - MARGIN), scaler(value_min, value_max, HEIGHT - MARGIN, MARGIN)]
 end
 
 def draw_data(output, data)
-  colours, x_scaler, y_scaler = calculate_attributes(data)
-  data.each_cons(2) do |(x0, ys0), (x1, ys1)|
-    (0...ys0.count).each do |i|
-      output.line_xiaolin_wu(x_scaler.call(x0).to_i, y_scaler.call(ys0[i]).to_i,
-                             x_scaler.call(x1).to_i, y_scaler.call(ys1[i]).to_i,
+  colours, horizontal_scaler, vertical_scaler = calculate_attributes(data)
+  data.each_cons(2) do |(x0, series0), (x1, series1)|
+    (0...series0.count).each do |i|
+      output.line_xiaolin_wu(horizontal_scaler.call(x0).to_i, vertical_scaler.call(series0[i]).to_i,
+                             horizontal_scaler.call(x1).to_i, vertical_scaler.call(series1[i]).to_i,
                              colours[i])
     end
   end
