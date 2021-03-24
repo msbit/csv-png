@@ -10,7 +10,8 @@ Bundler.require(:default)
 
 options = {
   width: 1920,
-  height: 1080
+  height: 1080,
+  margin: 54
 }
 
 option_parser = OptionParser.new do |parser|
@@ -36,7 +37,7 @@ if options[:input].nil? || options[:output].nil?
   return
 end
 
-MARGIN = 50
+options[:margin] = [options[:height].to_f * 0.05, options[:width].to_f * 0.05].min.to_i
 
 def read_input(filename)
   input = CSV.foreach(filename)
@@ -58,11 +59,11 @@ def read_input(filename)
 end
 
 def draw_axes(output, _labels, _data, options)
-  output.line_xiaolin_wu(MARGIN, MARGIN,
-                         MARGIN, options[:height] - MARGIN,
+  output.line_xiaolin_wu(options[:margin], options[:margin],
+                         options[:margin], options[:height] - options[:margin],
                          ChunkyPNG::Color::BLACK)
-  output.line_xiaolin_wu(MARGIN, options[:height] - MARGIN,
-                         options[:width] - MARGIN, options[:height] - MARGIN,
+  output.line_xiaolin_wu(options[:margin], options[:height] - options[:margin],
+                         options[:width] - options[:margin], options[:height] - options[:margin],
                          ChunkyPNG::Color::BLACK)
 end
 
@@ -89,8 +90,8 @@ def calculate_attributes(data, options)
 
   [
     colours,
-    scaler(xmin, xmax, MARGIN, options[:width] - MARGIN),
-    scaler(value_min, value_max, options[:height] - MARGIN, MARGIN)
+    scaler(xmin, xmax, options[:margin], options[:width] - options[:margin]),
+    scaler(value_min, value_max, options[:height] - options[:margin], options[:margin])
   ]
 end
 
