@@ -15,7 +15,7 @@ options = {
 }
 
 option_parser = OptionParser.new do |parser|
-  parser.banner = 'Usage: csv2png.rb [options]'
+  parser.banner = 'Usage: csv-png.rb [options]'
   parser.on('-i INPUT', '--input=INPUT', 'Input CSV file')
   parser.on('-o OUTPUT', '--output=OUTPUT', 'Output PNG file')
   parser.on('-w WIDTH', '--width=WIDTH', Integer, 'Output PNG width')
