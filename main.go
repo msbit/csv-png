@@ -41,8 +41,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	labels, data, err := cmd.ReadInput(options.input)
+	_, data, err := cmd.ReadInput(options.input)
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -54,14 +55,17 @@ func main() {
 
 	output, err := os.Create(options.output)
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	defer output.Close()
 
-	png.Encode(output, img)
-
-	fmt.Println(labels, data[1])
+	err = png.Encode(output, img)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func draw_axes(img *image.RGBA, options options_t) {
