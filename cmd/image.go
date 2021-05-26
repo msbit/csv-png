@@ -85,6 +85,12 @@ func fpart(x float64) float64 {
 	return x - math.Floor(x)
 }
 
-func plot(img *image.RGBA, x float64, y float64, b float64, c color.Color) {
+func plot(img *image.RGBA, x float64, y float64, brightness float64, full color.Color) {
+	r, g, b, _ := full.RGBA()
+	c := color.RGBA{
+		uint8(float64(r) * brightness / 256.0),
+		uint8(float64(g) * brightness / 256.0),
+		uint8(float64(b) * brightness / 256.0),
+		uint8(brightness * 255.0)}
 	img.Set(int(x), int(y), c)
 }
