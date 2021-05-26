@@ -16,7 +16,7 @@ type options_t struct {
 	output string
 	width  int
 	height int
-	margin uint
+	margin int
 }
 
 func main() {
@@ -47,6 +47,8 @@ func main() {
 		}
 	}
 
+	draw_axes(img, labels, data, options)
+
 	/*
 	   TODO:
 	     * calculate attributes
@@ -63,4 +65,13 @@ func main() {
 	png.Encode(output, img)
 
 	fmt.Println(labels, data)
+}
+
+func draw_axes(img *image.RGBA, labels []string, data map[float64][]float64, options options_t) {
+	margin := float64(options.margin)
+	width := float64(options.width)
+	height := float64(options.height)
+
+	cmd.DrawLine(img, margin, margin, margin, height-margin, color.Black)
+	cmd.DrawLine(img, margin, height-margin, width-margin, height-margin, color.Black)
 }
