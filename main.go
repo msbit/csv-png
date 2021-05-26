@@ -13,8 +13,8 @@ import (
 type options_t struct {
 	input  string
 	output string
-	width  uint
-	height uint
+	width  int
+	height int
 	margin uint
 }
 
@@ -24,8 +24,8 @@ func main() {
 	flag.StringVar(&options.input, "input", "", "Input CSV file")
 	flag.StringVar(&options.output, "output", "", "Output PNG file")
 
-	flag.UintVar(&options.width, "width", 1920, "Output PNG width")
-	flag.UintVar(&options.height, "height", 1080, "Output PNG height")
+	flag.IntVar(&options.width, "width", 1920, "Output PNG width")
+	flag.IntVar(&options.height, "height", 1080, "Output PNG height")
 
 	flag.Parse()
 
