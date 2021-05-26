@@ -1,13 +1,15 @@
 package main
 
 import (
+	"encoding/csv"
 	"flag"
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"io"
 	"os"
 	"strconv"
-
-	"encoding/csv"
 )
 
 type options_t struct {
@@ -39,11 +41,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.width, options.height}})
+	for x := 0; x < options.width; x++ {
+		for y := 0; y < options.height; y++ {
+			img.Set(x, y, color.White)
+		}
+	}
+
 	/*
 	   TODO:
 	     * calculate attributes
 	     * draw the data
 	*/
+
+	output, err := os.Create(options.output)
+	if err != nil {
+		os.Exit(1)
+	}
+
+	defer output.Close()
+
+	png.Encode(output, img)
 
 	fmt.Println(labels, data)
 }
