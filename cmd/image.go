@@ -68,6 +68,15 @@ func DrawLine(img *image.RGBA, x0 float64, y0 float64, x1 float64, y1 float64, c
 	}
 }
 
+func Fill(img *image.RGBA, c color.Color) {
+	bounds := img.Bounds()
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			img.Set(x, y, c)
+		}
+	}
+}
+
 func rfpart(x float64) float64 {
 	return 1 - fpart(x)
 }

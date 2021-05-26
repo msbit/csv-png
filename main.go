@@ -41,11 +41,7 @@ func main() {
 	}
 
 	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.width, options.height}})
-	for x := 0; x < options.width; x++ {
-		for y := 0; y < options.height; y++ {
-			img.Set(x, y, color.White)
-		}
-	}
+	cmd.Fill(img, color.White)
 
 	draw_axes(img, labels, data, options)
 
