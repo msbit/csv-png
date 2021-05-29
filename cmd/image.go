@@ -112,7 +112,7 @@ func (img *Image) DrawAxes(options Options) {
 }
 
 func (img *Image) DrawData(data map[float64][]float64, options Options) {
-	colours, h_scaler, v_scaler := calculate_attributes(data, options)
+	colours, hScaler, vScaler := calculateAttributes(data, options)
 	keys := make([]float64, 0, len(data))
 	for k := range data {
 		keys = append(keys, k)
@@ -124,32 +124,32 @@ func (img *Image) DrawData(data map[float64][]float64, options Options) {
 		series0 := data[x0]
 		series1 := data[x1]
 		for j := 0; j < len(series0); j++ {
-			img.DrawLine(h_scaler(x0), v_scaler(series0[j]), h_scaler(x1), v_scaler(series1[j]), colours[j])
+			img.DrawLine(hScaler(x0), vScaler(series0[j]), hScaler(x1), vScaler(series1[j]), colours[j])
 		}
 	}
 }
 
-func calculate_attributes(data map[float64][]float64, options Options) ([]color.Color, scaler, scaler) {
+func calculateAttributes(data map[float64][]float64, options Options) ([]color.Color, scaler, scaler) {
 	xmin := math.Inf(1)
 	xmax := math.Inf(-1)
-	value_min := math.Inf(1)
-	value_max := math.Inf(-1)
-	series_count := 0
+	valueMin := math.Inf(1)
+	valueMax := math.Inf(-1)
+	seriesCount := 0
 
 	for x, series := range data {
 		xmin = math.Min(x, xmin)
 		xmax = math.Max(x, xmax)
-		series_count = Max(series_count, len(series))
+		seriesCount = Max(seriesCount, len(series))
 
 		for _, value := range series {
-			value_min = math.Min(value_min, value)
-			value_max = math.Max(value_max, value)
+			valueMin = math.Min(valueMin, value)
+			valueMax = math.Max(valueMax, value)
 		}
 	}
 
 	colours := []color.Color{}
-	for i := 0; i < series_count; i++ {
-		hue := float64(i) / float64(series_count)
+	for i := 0; i < seriesCount; i++ {
+		hue := float64(i) / float64(seriesCount)
 		rgb := _color.HSL{hue, 0.5, 0.5}.ToRGB()
 		colours = append(colours, color.RGBA{uint8(rgb.R * 0xff), uint8(rgb.G * 0xff), uint8(rgb.B * 0xff), 0xff})
 	}
@@ -160,5 +160,5 @@ func calculate_attributes(data map[float64][]float64, options Options) ([]color.
 
 	return colours,
 		Scaler(xmin, xmax, float64(margin), float64(width-margin)),
-		Scaler(value_min, value_max, float64(height-margin), float64(margin))
+		Scaler(valueMin, valueMax, float64(height-margin), float64(margin))
 }
