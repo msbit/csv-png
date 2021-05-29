@@ -47,8 +47,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.width, options.height}})
-	cmd.Fill(img, color.White)
+	img := &cmd.Image{
+		image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.width, options.height}}),
+	}
+	img.Fill(color.White)
 
 	draw_axes(img, options)
 	draw_data(img, data, options)
@@ -68,16 +70,16 @@ func main() {
 	}
 }
 
-func draw_axes(img *image.RGBA, options options_t) {
+func draw_axes(img *cmd.Image, options options_t) {
 	margin := float64(options.margin)
 	width := float64(options.width)
 	height := float64(options.height)
 
-	cmd.DrawLine(img, margin, margin, margin, height-margin, color.Black)
-	cmd.DrawLine(img, margin, height-margin, width-margin, height-margin, color.Black)
+	img.DrawLine(margin, margin, margin, height-margin, color.Black)
+	img.DrawLine(margin, height-margin, width-margin, height-margin, color.Black)
 }
 
-func draw_data(img *image.RGBA, data map[float64][]float64, options options_t) {
+func draw_data(img *cmd.Image, data map[float64][]float64, options options_t) {
 	colours, h_scaler, v_scaler := calculate_attributes(data, options)
 	keys := make([]float64, 0, len(data))
 	for k := range data {
@@ -90,7 +92,7 @@ func draw_data(img *image.RGBA, data map[float64][]float64, options options_t) {
 		series0 := data[x0]
 		series1 := data[x1]
 		for j := 0; j < len(series0); j++ {
-			cmd.DrawLine(img, h_scaler(x0), v_scaler(series0[j]), h_scaler(x1), v_scaler(series1[j]), colours[j])
+			img.DrawLine(h_scaler(x0), v_scaler(series0[j]), h_scaler(x1), v_scaler(series1[j]), colours[j])
 		}
 	}
 }

@@ -6,7 +6,11 @@ import (
 	"math"
 )
 
-func DrawLine(img *image.RGBA, x0 float64, y0 float64, x1 float64, y1 float64, c color.Color) {
+type Image struct {
+	*image.RGBA
+}
+
+func (img *Image) DrawLine(x0 float64, y0 float64, x1 float64, y1 float64, c color.Color) {
 	steep := math.Abs(y1-y0) > math.Abs(x1-x0)
 	if steep {
 		x0, y0 = y0, x0
@@ -32,11 +36,11 @@ func DrawLine(img *image.RGBA, x0 float64, y0 float64, x1 float64, y1 float64, c
 	xpxl1 := xend
 	ypxl1 := math.Floor(yend)
 	if steep {
-		plot(img, ypxl1, xpxl1, rfpart(yend)*xgap, c)
-		plot(img, ypxl1+1, xpxl1, fpart(yend)*xgap, c)
+		img.plot(ypxl1, xpxl1, rfpart(yend)*xgap, c)
+		img.plot(ypxl1+1, xpxl1, fpart(yend)*xgap, c)
 	} else {
-		plot(img, xpxl1, ypxl1, rfpart(yend)*xgap, c)
-		plot(img, xpxl1, ypxl1+1, fpart(yend)*xgap, c)
+		img.plot(xpxl1, ypxl1, rfpart(yend)*xgap, c)
+		img.plot(xpxl1, ypxl1+1, fpart(yend)*xgap, c)
 	}
 	intery := yend + gradient
 
@@ -46,29 +50,29 @@ func DrawLine(img *image.RGBA, x0 float64, y0 float64, x1 float64, y1 float64, c
 	xpxl2 := xend
 	ypxl2 := math.Floor(yend)
 	if steep {
-		plot(img, ypxl2, xpxl2, rfpart(yend)*xgap, c)
-		plot(img, ypxl2+1, xpxl2, fpart(yend)*xgap, c)
+		img.plot(ypxl2, xpxl2, rfpart(yend)*xgap, c)
+		img.plot(ypxl2+1, xpxl2, fpart(yend)*xgap, c)
 	} else {
-		plot(img, xpxl2, ypxl2, rfpart(yend)*xgap, c)
-		plot(img, xpxl2, ypxl2+1, fpart(yend)*xgap, c)
+		img.plot(xpxl2, ypxl2, rfpart(yend)*xgap, c)
+		img.plot(xpxl2, ypxl2+1, fpart(yend)*xgap, c)
 	}
 
 	if steep {
 		for x := xpxl1 + 1; x < xpxl2; x++ {
-			plot(img, math.Floor(intery), x, rfpart(intery), c)
-			plot(img, math.Floor(intery)+1, x, fpart(intery), c)
+			img.plot(math.Floor(intery), x, rfpart(intery), c)
+			img.plot(math.Floor(intery)+1, x, fpart(intery), c)
 			intery = intery + gradient
 		}
 	} else {
 		for x := xpxl1 + 1; x < xpxl2; x++ {
-			plot(img, x, math.Floor(intery), rfpart(intery), c)
-			plot(img, x, math.Floor(intery)+1, fpart(intery), c)
+			img.plot(x, math.Floor(intery), rfpart(intery), c)
+			img.plot(x, math.Floor(intery)+1, fpart(intery), c)
 			intery = intery + gradient
 		}
 	}
 }
 
-func Fill(img *image.RGBA, c color.Color) {
+func (img *Image) Fill(c color.Color) {
 	bounds := img.Bounds()
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
@@ -85,7 +89,7 @@ func fpart(x float64) float64 {
 	return x - math.Floor(x)
 }
 
-func plot(img *image.RGBA, x float64, y float64, brightness float64, full color.Color) {
+func (img *Image) plot(x float64, y float64, brightness float64, full color.Color) {
 	r, g, b, _ := full.RGBA()
 	c := color.RGBA{
 		uint8(float64(r) * brightness / 256.0),
