@@ -6,7 +6,7 @@ import (
 	"math"
 	"sort"
 
-	_color "github.com/gerow/go-color"
+	gerowColor "github.com/gerow/go-color"
 )
 
 type Image struct {
@@ -150,7 +150,7 @@ func calculateAttributes(data map[float64][]float64, options Options) ([]color.C
 	colours := []color.Color{}
 	for i := 0; i < seriesCount; i++ {
 		hue := float64(i) / float64(seriesCount)
-		rgb := _color.HSL{hue, 0.5, 0.5}.ToRGB()
+		rgb := gerowColor.HSL{hue, 0.5, 0.5}.ToRGB()
 		colours = append(colours, color.RGBA{uint8(rgb.R * 0xff), uint8(rgb.G * 0xff), uint8(rgb.B * 0xff), 0xff})
 	}
 
