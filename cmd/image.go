@@ -4,6 +4,9 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"sort"
+
+	_color "github.com/gerow/go-color"
 )
 
 type Image struct {
@@ -97,4 +100,65 @@ func (img *Image) plot(x float64, y float64, brightness float64, full color.Colo
 		uint8(float64(b) * brightness / 256.0),
 		uint8(brightness * 255.0)}
 	img.Set(int(x), int(y), c)
+}
+
+func (img *Image) DrawAxes(options Options) {
+	margin := float64(options.Margin)
+	width := float64(options.Width)
+	height := float64(options.Height)
+
+	img.DrawLine(margin, margin, margin, height-margin, color.Black)
+	img.DrawLine(margin, height-margin, width-margin, height-margin, color.Black)
+}
+
+func (img *Image) DrawData(data map[float64][]float64, options Options) {
+	colours, h_scaler, v_scaler := calculate_attributes(data, options)
+	keys := make([]float64, 0, len(data))
+	for k := range data {
+		keys = append(keys, k)
+	}
+	sort.Float64s(keys)
+	for i := 1; i < len(keys); i++ {
+		x0 := keys[i-1]
+		x1 := keys[i]
+		series0 := data[x0]
+		series1 := data[x1]
+		for j := 0; j < len(series0); j++ {
+			img.DrawLine(h_scaler(x0), v_scaler(series0[j]), h_scaler(x1), v_scaler(series1[j]), colours[j])
+		}
+	}
+}
+
+func calculate_attributes(data map[float64][]float64, options Options) ([]color.Color, scaler, scaler) {
+	xmin := math.Inf(1)
+	xmax := math.Inf(-1)
+	value_min := math.Inf(1)
+	value_max := math.Inf(-1)
+	series_count := 0
+
+	for x, series := range data {
+		xmin = math.Min(x, xmin)
+		xmax = math.Max(x, xmax)
+		series_count = Max(series_count, len(series))
+
+		for _, value := range series {
+			value_min = math.Min(value_min, value)
+			value_max = math.Max(value_max, value)
+		}
+	}
+
+	colours := []color.Color{}
+	for i := 0; i < series_count; i++ {
+		hue := float64(i) / float64(series_count)
+		rgb := _color.HSL{hue, 0.5, 0.5}.ToRGB()
+		colours = append(colours, color.RGBA{uint8(rgb.R * 0xff), uint8(rgb.G * 0xff), uint8(rgb.B * 0xff), 0xff})
+	}
+
+	margin := options.Margin
+	width := options.Width
+	height := options.Height
+
+	return colours,
+		Scaler(xmin, xmax, float64(margin), float64(width-margin)),
+		Scaler(value_min, value_max, float64(height-margin), float64(margin))
 }
