@@ -24,7 +24,7 @@ var testCases = map[HSL]color.RGBA{
 	/* Navy */ HSL{240, 1.0, 0.25}: color.RGBA{0, 0, 127, 255},
 }
 
-func TestHSLToRGB(t *testing.T) {
+func TestHSLToColour(t *testing.T) {
 	for input, want := range testCases {
 		got := HSLToColour(input)
 		if got != want {
