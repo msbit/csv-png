@@ -5,15 +5,13 @@ import (
 	"image/color"
 	"math"
 	"sort"
-
-	gerowColor "github.com/gerow/go-color"
 )
 
 type Image struct {
 	*image.RGBA
 }
 
-func (img *Image) DrawLine(x0 float64, y0 float64, x1 float64, y1 float64, hsl gerowColor.HSL) {
+func (img *Image) DrawLine(x0 float64, y0 float64, x1 float64, y1 float64, hsl HSL) {
 	steep := math.Abs(y1-y0) > math.Abs(x1-x0)
 	if steep {
 		x0, y0 = y0, x0
@@ -92,11 +90,9 @@ func fpart(x float64) float64 {
 	return x - math.Floor(x)
 }
 
-func (img *Image) plot(x float64, y float64, brightness float64, hsl gerowColor.HSL) {
+func (img *Image) plot(x float64, y float64, brightness float64, hsl HSL) {
 	hsl.L = 1.0 - (brightness * 0.5)
-	rgb := hsl.ToRGB()
-	rgba := color.RGBA{uint8(rgb.R * 256), uint8(rgb.G * 256), uint8(rgb.B * 256), 255}
-	img.Set(int(x), int(y), rgba)
+	img.Set(int(x), int(y), HSLToColour(hsl))
 }
 
 func (img *Image) DrawAxes(options Options) {
@@ -104,8 +100,8 @@ func (img *Image) DrawAxes(options Options) {
 	width := float64(options.Width)
 	height := float64(options.Height)
 
-	img.DrawLine(margin, margin, margin, height-margin, gerowColor.HSL{0.0, 0.0, 0.0})
-	img.DrawLine(margin, height-margin, width-margin, height-margin, gerowColor.HSL{0.0, 0.0, 0.0})
+	img.DrawLine(margin, margin, margin, height-margin, HSL{0, 0.0, 0.0})
+	img.DrawLine(margin, height-margin, width-margin, height-margin, HSL{0, 0.0, 0.0})
 }
 
 func (img *Image) DrawData(data map[float64][]float64, options Options) {
@@ -126,7 +122,7 @@ func (img *Image) DrawData(data map[float64][]float64, options Options) {
 	}
 }
 
-func calculateAttributes(data map[float64][]float64, options Options) ([]gerowColor.HSL, scaler, scaler) {
+func calculateAttributes(data map[float64][]float64, options Options) ([]HSL, scaler, scaler) {
 	xmin := math.Inf(1)
 	xmax := math.Inf(-1)
 	valueMin := math.Inf(1)
@@ -144,10 +140,10 @@ func calculateAttributes(data map[float64][]float64, options Options) ([]gerowCo
 		}
 	}
 
-	colours := []gerowColor.HSL{}
+	colours := []HSL{}
 	for i := 0; i < seriesCount; i++ {
-		hue := float64(i) / float64(seriesCount)
-		hsl := gerowColor.HSL{hue, 1.0, 0.5}
+		hue := uint16((360 * i) / seriesCount)
+		hsl := HSL{hue, 1.0, 0.5}
 		colours = append(colours, hsl)
 	}
 
