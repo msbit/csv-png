@@ -33,7 +33,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	img := &cmd.Image{
+	img := cmd.Image{
 		image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.Width, options.Height}}),
 	}
 	img.Fill(color.White)
