@@ -25,11 +25,10 @@ var testCases = map[HSL]color.RGBA{
 }
 
 func TestHSLToColour(t *testing.T) {
-	for input, want := range testCases {
-		got := HSLToColour(input)
-		if got != want {
-			r, g, b, a := got.RGBA()
-			t.Fatalf("input: %v, got {%d %d %d %d}, wanted {%d %d %d %d}", input, r, g, b, a, want.R, want.G, want.B, want.A)
+	for input, expected := range testCases {
+		actual := HSLToColour(input)
+		if actual != expected {
+			t.Errorf("input: %v, actual: %v, expected: %v", input, actual, expected)
 		}
 	}
 }
