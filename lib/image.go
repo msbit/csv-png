@@ -130,13 +130,13 @@ func calculateAttributes(data map[float64][]float64, options Options) ([]HSL, sc
 	seriesCount := 0
 
 	for x, series := range data {
-		xmin = math.Min(x, xmin)
-		xmax = math.Max(x, xmax)
-		seriesCount = Max(seriesCount, len(series))
+		xmin = min(x, xmin)
+		xmax = max(x, xmax)
+		seriesCount = max(seriesCount, len(series))
 
 		for _, value := range series {
-			valueMin = math.Min(valueMin, value)
-			valueMax = math.Max(valueMax, value)
+			valueMin = min(valueMin, value)
+			valueMax = max(valueMax, value)
 		}
 	}
 

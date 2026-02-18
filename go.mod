@@ -1,3 +1,3 @@
 module github.com/msbit/csv-png
 
-go 1.18
+go 1.21
