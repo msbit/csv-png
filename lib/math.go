@@ -1,4 +1,4 @@
-package cmd
+package lib
 
 func Max(x int, y int) int {
 	if x < y {

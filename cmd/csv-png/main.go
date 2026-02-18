@@ -8,11 +8,11 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/msbit/csv-png/cmd"
+	"github.com/msbit/csv-png/lib"
 )
 
 func main() {
-	options := cmd.Options{Margin: 54}
+	options := lib.Options{Margin: 54}
 
 	flag.StringVar(&options.Input, "input", "", "Input CSV file")
 	flag.StringVar(&options.Output, "output", "", "Output PNG file")
@@ -27,13 +27,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, data, err := cmd.ReadInput(options.Input)
+	_, data, err := lib.ReadInput(options.Input)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	img := cmd.Image{
+	img := lib.Image{
 		image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.Width, options.Height}}),
 	}
 	img.Fill(color.White)

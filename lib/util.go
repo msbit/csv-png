@@ -1,4 +1,4 @@
-package cmd
+package lib
 
 type scaler = func(float64) float64
 
