@@ -3,8 +3,9 @@ package lib
 import (
 	"image"
 	"image/color"
+	"maps"
 	"math"
-	"sort"
+	"slices"
 )
 
 type Image struct {
@@ -136,11 +137,7 @@ func (i *Image) DrawAxes() {
 
 func (img *Image) DrawData(data map[float64][]float64) {
 	colours, hScaler, vScaler := calculateAttributes(img, data)
-	keys := make([]float64, 0, len(data))
-	for k := range data {
-		keys = append(keys, k)
-	}
-	sort.Float64s(keys)
+	keys := slices.Sorted(maps.Keys(data))
 	for i := 1; i < len(keys); i++ {
 		x0 := keys[i-1]
 		x1 := keys[i]
@@ -160,21 +157,21 @@ func calculateAttributes(
 	img *Image,
 	data map[float64][]float64,
 ) ([]hsl, scaler, scaler) {
-	xmin := math.Inf(1)
-	xmax := math.Inf(-1)
 	valueMin := math.Inf(1)
 	valueMax := math.Inf(-1)
 	seriesCount := 0
 
-	for x, series := range data {
-		xmin = min(x, xmin)
-		xmax = max(x, xmax)
+	keys := slices.Collect(maps.Keys(data))
+	values := slices.Collect(maps.Values(data))
+
+	xmin := slices.Min(keys)
+	xmax := slices.Max(keys)
+
+	for _, series := range values {
 		seriesCount = max(seriesCount, len(series))
 
-		for _, value := range series {
-			valueMin = min(valueMin, value)
-			valueMax = max(valueMax, value)
-		}
+		valueMin = min(valueMin, slices.Min(series))
+		valueMax = max(valueMax, slices.Max(series))
 	}
 
 	colours := []hsl{}
