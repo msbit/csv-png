@@ -174,11 +174,9 @@ func calculateAttributes(
 		valueMax = max(valueMax, slices.Max(series))
 	}
 
-	colours := []hsl{}
+	colours := make([]hsl, seriesCount)
 	for i := 0; i < seriesCount; i++ {
-		hue := uint16((360 * i) / seriesCount)
-		hsl := hsl{hue, 1.0, 0.5}
-		colours = append(colours, hsl)
+		colours[i] = hsl{uint16((360 * i) / seriesCount), 1.0, 0.5}
 	}
 
 	return colours,
