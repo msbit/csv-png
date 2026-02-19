@@ -38,7 +38,7 @@ func margin(width, height float64) float64 {
 	return min(width, height) / 20.0
 }
 
-func (img *Image) DrawLine(from point, to point, hsl hsl) {
+func (img *Image) DrawLine(from, to point, hsl hsl) {
 	steep := math.Abs(to.y-from.y) > math.Abs(to.x-from.x)
 	if steep {
 		from.x, from.y = from.y, from.x
@@ -122,15 +122,15 @@ func (img *Image) plot(x, y, brightness float64, hsl hsl) {
 	img.Set(int(x), int(y), hSLToColour(hsl))
 }
 
-func (i *Image) DrawAxes() {
-	i.DrawLine(
-		point{i.margin, i.margin},
-		point{i.margin, i.height - i.margin},
+func (img *Image) DrawAxes() {
+	img.DrawLine(
+		point{img.margin, img.margin},
+		point{img.margin, img.height - img.margin},
 		hsl{0, 0.0, 0.0},
 	)
-	i.DrawLine(
-		point{i.margin, i.height - i.margin},
-		point{i.width - i.margin, i.height - i.margin},
+	img.DrawLine(
+		point{img.margin, img.height - img.margin},
+		point{img.width - img.margin, img.height - img.margin},
 		hsl{0, 0.0, 0.0},
 	)
 }
