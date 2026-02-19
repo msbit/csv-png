@@ -45,8 +45,7 @@ func main() {
 
 	defer output.Close()
 
-	err = png.Encode(output, img)
-	if err != nil {
+	if err := png.Encode(output, img); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

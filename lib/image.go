@@ -19,7 +19,7 @@ type point struct {
 	y float64
 }
 
-func NewImage(width float64, height float64) Image {
+func NewImage(width, height float64) Image {
 	return Image{
 		image.NewRGBA(
 			image.Rectangle{
@@ -116,7 +116,7 @@ func fpart(x float64) float64 {
 	return x - math.Floor(x)
 }
 
-func (img *Image) plot(x float64, y float64, brightness float64, hsl hsl) {
+func (img *Image) plot(x, y, brightness float64, hsl hsl) {
 	hsl.l = 1.0 - (brightness * 0.5)
 	img.Set(int(x), int(y), hSLToColour(hsl))
 }
