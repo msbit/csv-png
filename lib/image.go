@@ -19,7 +19,7 @@ type point struct {
 	y float64
 }
 
-func NewImage(width float64, height float64, margin int) Image {
+func NewImage(width float64, height float64) Image {
 	return Image{
 		image.NewRGBA(
 			image.Rectangle{
@@ -29,8 +29,12 @@ func NewImage(width float64, height float64, margin int) Image {
 		),
 		width,
 		height,
-		float64(margin),
+		margin(width, height),
 	}
+}
+
+func margin(width, height float64) float64 {
+	return min(width, height) / 20.0
 }
 
 func (img *Image) DrawLine(from point, to point, hsl hsl) {

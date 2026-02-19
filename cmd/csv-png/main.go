@@ -25,15 +25,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	margin := 54
-
 	_, data, err := lib.ReadInput(*input)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	img := lib.NewImage(*width, *height, margin)
+	img := lib.NewImage(*width, *height)
 	img.Fill(color.White)
 
 	img.DrawAxes()
