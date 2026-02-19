@@ -9,9 +9,9 @@ import (
 
 type Image struct {
 	*image.RGBA
-	width  int
-	height int
-	margin int
+	width  float64
+	height float64
+	margin float64
 }
 
 type point struct {
@@ -19,17 +19,17 @@ type point struct {
 	y float64
 }
 
-func NewImage(width int, height int, margin int) Image {
+func NewImage(width float64, height float64, margin int) Image {
 	return Image{
 		image.NewRGBA(
 			image.Rectangle{
 				image.Point{0, 0},
-				image.Point{width, height},
+				image.Point{int(width), int(height)},
 			},
 		),
 		width,
 		height,
-		margin,
+		float64(margin),
 	}
 }
 
@@ -117,19 +117,15 @@ func (img *Image) plot(x float64, y float64, brightness float64, hsl hsl) {
 	img.Set(int(x), int(y), hSLToColour(hsl))
 }
 
-func (img *Image) DrawAxes() {
-	margin := float64(img.margin)
-	width := float64(img.width)
-	height := float64(img.height)
-
-	img.DrawLine(
-		point{margin, margin},
-		point{margin, height - margin},
+func (i *Image) DrawAxes() {
+	i.DrawLine(
+		point{i.margin, i.margin},
+		point{i.margin, i.height - i.margin},
 		hsl{0, 0.0, 0.0},
 	)
-	img.DrawLine(
-		point{margin, height - margin},
-		point{width - margin, height - margin},
+	i.DrawLine(
+		point{i.margin, i.height - i.margin},
+		point{i.width - i.margin, i.height - i.margin},
 		hsl{0, 0.0, 0.0},
 	)
 }
@@ -184,11 +180,7 @@ func calculateAttributes(
 		colours = append(colours, hsl)
 	}
 
-	margin := img.margin
-	width := img.width
-	height := img.height
-
 	return colours,
-		Scaler(xmin, xmax, float64(margin), float64(width-margin)),
-		Scaler(valueMin, valueMax, float64(height-margin), float64(margin))
+		Scaler(xmin, xmax, img.margin, img.width-img.margin),
+		Scaler(valueMin, valueMax, img.height-img.margin, img.margin)
 }

@@ -13,8 +13,8 @@ import (
 var (
 	input  = flag.String("input", "", "Input CSV file")
 	output = flag.String("output", "", "Output PNG file")
-	width  = flag.Int("width", 1920, "Output PNG width")
-	height = flag.Int("height", 1080, "Output PNG height")
+	width  = flag.Float64("width", 1920, "Output PNG width")
+	height = flag.Float64("height", 1080, "Output PNG height")
 )
 
 func main() {
