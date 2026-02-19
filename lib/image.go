@@ -9,9 +9,23 @@ import (
 
 type Image struct {
 	*image.RGBA
-	Width  int
-	Height int
-	Margin int
+	width  int
+	height int
+	margin int
+}
+
+func NewImage(width int, height int, margin int) Image {
+	return Image{
+		image.NewRGBA(
+			image.Rectangle{
+				image.Point{0, 0},
+				image.Point{width, height},
+			},
+		),
+		width,
+		height,
+		margin,
+	}
 }
 
 func (img *Image) DrawLine(
@@ -105,9 +119,9 @@ func (img *Image) plot(x float64, y float64, brightness float64, hsl hsl) {
 }
 
 func (img *Image) DrawAxes() {
-	margin := float64(img.Margin)
-	width := float64(img.Width)
-	height := float64(img.Height)
+	margin := float64(img.margin)
+	width := float64(img.width)
+	height := float64(img.height)
 
 	img.DrawLine(margin, margin, margin, height-margin, hsl{0, 0.0, 0.0})
 	img.DrawLine(
@@ -171,9 +185,9 @@ func calculateAttributes(
 		colours = append(colours, hsl)
 	}
 
-	margin := img.Margin
-	width := img.Width
-	height := img.Height
+	margin := img.margin
+	width := img.width
+	height := img.height
 
 	return colours,
 		Scaler(xmin, xmax, float64(margin), float64(width-margin)),

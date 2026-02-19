@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"image"
 	"image/color"
 	"image/png"
 	"os"
@@ -34,17 +33,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	img := lib.Image{
-		image.NewRGBA(
-			image.Rectangle{
-				image.Point{0, 0},
-				image.Point{*width, *height},
-			},
-		),
-		*width,
-		*height,
-		margin,
-	}
+	img := lib.NewImage(*width, *height, margin)
 	img.Fill(color.White)
 
 	img.DrawAxes()
