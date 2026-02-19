@@ -14,6 +14,11 @@ type Image struct {
 	margin int
 }
 
+type point struct {
+	x float64
+	y float64
+}
+
 func NewImage(width int, height int, margin int) Image {
 	return Image{
 		image.NewRGBA(
@@ -28,35 +33,29 @@ func NewImage(width int, height int, margin int) Image {
 	}
 }
 
-func (img *Image) DrawLine(
-	x0 float64,
-	y0 float64,
-	x1 float64,
-	y1 float64,
-	hsl hsl,
-) {
-	steep := math.Abs(y1-y0) > math.Abs(x1-x0)
+func (img *Image) DrawLine(from point, to point, hsl hsl) {
+	steep := math.Abs(to.y-from.y) > math.Abs(to.x-from.x)
 	if steep {
-		x0, y0 = y0, x0
-		x1, y1 = y1, x1
+		from.x, from.y = from.y, from.x
+		to.x, to.y = to.y, to.x
 	}
 
-	if x0 > x1 {
-		x0, x1 = x1, x0
-		y0, y1 = y1, y0
+	if from.x > to.x {
+		from.x, to.x = to.x, from.x
+		from.y, to.y = to.y, from.y
 	}
 
-	dx := x1 - x0
-	dy := y1 - y0
+	dx := to.x - from.x
+	dy := to.y - from.y
 
 	gradient := dy / dx
 	if dx == 0.0 {
 		gradient = 1.0
 	}
 
-	xend := math.Round(x0)
-	yend := math.Round(y0 + gradient*(xend-x0))
-	xgap := rfpart(x0 + 0.5)
+	xend := math.Round(from.x)
+	yend := math.Round(from.y + gradient*(xend-from.x))
+	xgap := rfpart(from.x + 0.5)
 	xpxl1 := xend
 	ypxl1 := math.Floor(yend)
 	if steep {
@@ -68,9 +67,9 @@ func (img *Image) DrawLine(
 	}
 	intery := yend + gradient
 
-	xend = math.Round(x1)
-	yend = y1 + gradient*(xend-x1)
-	xgap = fpart(x1 + 0.5)
+	xend = math.Round(to.x)
+	yend = to.y + gradient*(xend-to.x)
+	xgap = fpart(to.x + 0.5)
 	xpxl2 := xend
 	ypxl2 := math.Floor(yend)
 	if steep {
@@ -123,12 +122,14 @@ func (img *Image) DrawAxes() {
 	width := float64(img.width)
 	height := float64(img.height)
 
-	img.DrawLine(margin, margin, margin, height-margin, hsl{0, 0.0, 0.0})
 	img.DrawLine(
-		margin,
-		height-margin,
-		width-margin,
-		height-margin,
+		point{margin, margin},
+		point{margin, height - margin},
+		hsl{0, 0.0, 0.0},
+	)
+	img.DrawLine(
+		point{margin, height - margin},
+		point{width - margin, height - margin},
 		hsl{0, 0.0, 0.0},
 	)
 }
@@ -147,10 +148,8 @@ func (img *Image) DrawData(data map[float64][]float64) {
 		series1 := data[x1]
 		for j := 0; j < len(series0); j++ {
 			img.DrawLine(
-				hScaler(x0),
-				vScaler(series0[j]),
-				hScaler(x1),
-				vScaler(series1[j]),
+				point{hScaler(x0), vScaler(series0[j])},
+				point{hScaler(x1), vScaler(series1[j])},
 				colours[j],
 			)
 		}
