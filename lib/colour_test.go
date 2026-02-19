@@ -32,7 +32,12 @@ func TestHSLToColour(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			actual := HSLToColour(tc.hsl)
 			if actual != tc.expected {
-				t.Errorf("input: %v, actual: %v, expected: %v", tc.hsl, actual, tc.expected)
+				t.Errorf(
+					"input: %v, actual: %v, expected: %v",
+					tc.hsl,
+					actual,
+					tc.expected,
+				)
 			}
 		})
 	}

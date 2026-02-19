@@ -11,37 +11,46 @@ import (
 	"github.com/msbit/csv-png/lib"
 )
 
+var (
+	input  = flag.String("input", "", "Input CSV file")
+	output = flag.String("output", "", "Output PNG file")
+	width  = flag.Int("width", 1920, "Output PNG width")
+	height = flag.Int("height", 1080, "Output PNG height")
+)
+
 func main() {
-	options := lib.Options{Margin: 54}
-
-	flag.StringVar(&options.Input, "input", "", "Input CSV file")
-	flag.StringVar(&options.Output, "output", "", "Output PNG file")
-
-	flag.IntVar(&options.Width, "width", 1920, "Output PNG width")
-	flag.IntVar(&options.Height, "height", 1080, "Output PNG height")
-
 	flag.Parse()
 
-	if options.Input == "" || options.Output == "" {
+	if *input == "" || *output == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
-	_, data, err := lib.ReadInput(options.Input)
+	margin := 54
+
+	_, data, err := lib.ReadInput(*input)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	img := lib.Image{
-		image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{options.Width, options.Height}}),
+		image.NewRGBA(
+			image.Rectangle{
+				image.Point{0, 0},
+				image.Point{*width, *height},
+			},
+		),
+		*width,
+		*height,
+		margin,
 	}
 	img.Fill(color.White)
 
-	img.DrawAxes(options)
-	img.DrawData(data, options)
+	img.DrawAxes()
+	img.DrawData(data)
 
-	output, err := os.Create(options.Output)
+	output, err := os.Create(*output)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

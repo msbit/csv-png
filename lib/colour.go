@@ -34,5 +34,10 @@ func hSLToColour(hsl hsl) color.Color {
 		r, g, b = c, 0.0, x
 	}
 
-	return color.RGBA{uint8((r + m) * 255), uint8((g + m) * 255), uint8((b + m) * 255), 255}
+	return color.RGBA{
+		uint8((r + m) * 255),
+		uint8((g + m) * 255),
+		uint8((b + m) * 255),
+		255,
+	}
 }

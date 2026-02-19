@@ -9,9 +9,18 @@ import (
 
 type Image struct {
 	*image.RGBA
+	Width  int
+	Height int
+	Margin int
 }
 
-func (img *Image) DrawLine(x0 float64, y0 float64, x1 float64, y1 float64, hsl hsl) {
+func (img *Image) DrawLine(
+	x0 float64,
+	y0 float64,
+	x1 float64,
+	y1 float64,
+	hsl hsl,
+) {
 	steep := math.Abs(y1-y0) > math.Abs(x1-x0)
 	if steep {
 		x0, y0 = y0, x0
@@ -95,17 +104,23 @@ func (img *Image) plot(x float64, y float64, brightness float64, hsl hsl) {
 	img.Set(int(x), int(y), hSLToColour(hsl))
 }
 
-func (img *Image) DrawAxes(options Options) {
-	margin := float64(options.Margin)
-	width := float64(options.Width)
-	height := float64(options.Height)
+func (img *Image) DrawAxes() {
+	margin := float64(img.Margin)
+	width := float64(img.Width)
+	height := float64(img.Height)
 
 	img.DrawLine(margin, margin, margin, height-margin, hsl{0, 0.0, 0.0})
-	img.DrawLine(margin, height-margin, width-margin, height-margin, hsl{0, 0.0, 0.0})
+	img.DrawLine(
+		margin,
+		height-margin,
+		width-margin,
+		height-margin,
+		hsl{0, 0.0, 0.0},
+	)
 }
 
-func (img *Image) DrawData(data map[float64][]float64, options Options) {
-	colours, hScaler, vScaler := calculateAttributes(data, options)
+func (img *Image) DrawData(data map[float64][]float64) {
+	colours, hScaler, vScaler := calculateAttributes(img, data)
 	keys := make([]float64, 0, len(data))
 	for k := range data {
 		keys = append(keys, k)
@@ -117,12 +132,21 @@ func (img *Image) DrawData(data map[float64][]float64, options Options) {
 		series0 := data[x0]
 		series1 := data[x1]
 		for j := 0; j < len(series0); j++ {
-			img.DrawLine(hScaler(x0), vScaler(series0[j]), hScaler(x1), vScaler(series1[j]), colours[j])
+			img.DrawLine(
+				hScaler(x0),
+				vScaler(series0[j]),
+				hScaler(x1),
+				vScaler(series1[j]),
+				colours[j],
+			)
 		}
 	}
 }
 
-func calculateAttributes(data map[float64][]float64, options Options) ([]hsl, scaler, scaler) {
+func calculateAttributes(
+	img *Image,
+	data map[float64][]float64,
+) ([]hsl, scaler, scaler) {
 	xmin := math.Inf(1)
 	xmax := math.Inf(-1)
 	valueMin := math.Inf(1)
@@ -147,9 +171,9 @@ func calculateAttributes(data map[float64][]float64, options Options) ([]hsl, sc
 		colours = append(colours, hsl)
 	}
 
-	margin := options.Margin
-	width := options.Width
-	height := options.Height
+	margin := img.Margin
+	width := img.Width
+	height := img.Height
 
 	return colours,
 		Scaler(xmin, xmax, float64(margin), float64(width-margin)),
