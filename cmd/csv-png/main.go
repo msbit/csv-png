@@ -32,7 +32,7 @@ func main() {
 	}
 
 	img := lib.NewImage(*width, *height)
-	img.Fill(color.White)
+	img.Fill(color.Gray16{0x4000})
 
 	img.DrawAxes()
 	img.DrawData(data)
