@@ -156,7 +156,7 @@ func (img *Image) DrawData(data map[float64][]float64) {
 func calculateAttributes(
 	img *Image,
 	data map[float64][]float64,
-) ([]hsl, scaler, scaler) {
+) ([]hsl, scalerFunc, scalerFunc) {
 	valueMin := math.Inf(1)
 	valueMax := math.Inf(-1)
 	seriesCount := 0
@@ -180,6 +180,6 @@ func calculateAttributes(
 	}
 
 	return colours,
-		Scaler(xmin, xmax, img.margin, img.width-img.margin),
-		Scaler(valueMin, valueMax, img.height-img.margin, img.margin)
+		scaler(xmin, xmax, img.margin, img.width-img.margin),
+		scaler(valueMin, valueMax, img.height-img.margin, img.margin)
 }

@@ -1,8 +1,8 @@
 package lib
 
-type scaler = func(float64) float64
+type scalerFunc = func(float64) float64
 
-func Scaler(inputMin, inputMax, outputMin, outputMax float64) scaler {
+func scaler(inputMin, inputMax, outputMin, outputMax float64) scalerFunc {
 	scale := (outputMax - outputMin) / (inputMax - inputMin)
 	return func(input float64) float64 {
 		return ((input - inputMin) * scale) + outputMin
